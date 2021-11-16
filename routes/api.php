@@ -32,8 +32,8 @@ Route::group(['prefix' => 'auth'], function () {
 Route::group(['prefix' => 'user'], function () {
 
     Route::middleware(['auth:sanctum'])->group(function () {
-        Route::put('{id}/update',  [UserController::class, 'update']);
-        Route::post('{id}/delete', [UserController::class, 'delete']);
+        Route::put('{user_id}/update',  [UserController::class, 'update']);
+        Route::delete('{user_id}/delete', [UserController::class, 'delete']);
 
     });
 });

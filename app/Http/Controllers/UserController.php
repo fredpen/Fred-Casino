@@ -59,7 +59,7 @@ class UserController extends Controller
     // update
     public function update(Request $request)
     {
-        $user = User::where('id', $request->id)->first();
+        $user = User::where('id', $request->user_id)->first();
         if (!$user) {
             return ResponseHelper::notFound("Invalid User Id");
         }
@@ -74,15 +74,22 @@ class UserController extends Controller
         if ($request->password) {
             $validatedData['password'] = bcrypt($request->password);
         }
-        $update = $user->update($validatedData);
 
-        if (!$update) {
-            return ResponseHelper::serverError("Could not update the user");
-        }
-
-        return ResponseHelper::sendSuccess([], "User updated");
+        return $user->update($validatedData) ?
+            ResponseHelper::sendSuccess([], "User updated") : ResponseHelper::serverError("Could not updated the user");
     }
 
+    // delete
+    public function delete(Request $request)
+    {
+        $user = User::where('id', $request->user_id)->first();
+        if (!$user) {
+            return ResponseHelper::serverError("Invalid User Id");
+        }
+
+        return $user->delete() ?
+            ResponseHelper::sendSuccess([], "User deleted") : ResponseHelper::serverError("Could not delete the user");
+    }
 
     //logout
     public function logout(Request $request)

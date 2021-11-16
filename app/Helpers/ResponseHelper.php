@@ -34,7 +34,7 @@ class ResponseHelper
         $response = [
             'message' => $message
         ];
-        return response()->json($response, 400);
+        return response()->json($response, 412);
     }
 
     public static function serverError($message = "We couldn't perform this operation")

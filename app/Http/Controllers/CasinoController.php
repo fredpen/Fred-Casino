@@ -7,17 +7,17 @@ use App\Models\Casino;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class CasinoController extends Controller
 {
-
     public function create(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'unique:casinos', 'string', 'max:255', 'bail'],
-            'logo' => ['required', 'mimes:jpg,jpeg,png', 'dimensions:width=180,height=90'],
-            'bonus_information' => ['required', 'string'],
-            'affiliate_link' => ['required', 'string', 'min:8'],
+            'bonus_information' => ['bail', 'required', 'string'],
+            'affiliate_link' => ['bail', 'required', 'url', 'min:8'],
+            'name' => ['bail', 'required', 'unique:casinos', 'string', 'max:255'],
+            'logo' => ['bail', 'required', 'mimes:jpg,jpeg,png', 'dimensions:width=180,height=90'],
         ]);
         $input = $request->only(['name', 'bonus_information', 'affiliate_link']);
 
@@ -30,6 +30,33 @@ class CasinoController extends Controller
         $casino = Casino::create($input);
         return $casino ?
             ResponseHelper::sendSuccess($casino) : ResponseHelper::notFound("Casino creation failed");
+    }
+
+    // update
+    public function update(Request $request)
+    {
+        $casino = Casino::where('id', $request->casino_id)->first();
+        if (!$casino) {
+            return ResponseHelper::notFound("Invalid casino Id");
+        }
+
+        $request->validate([
+            'bonus_information' => ['bail', 'sometimes', 'string'],
+            'affiliate_link' => ['bail', 'sometimes', 'url', 'min:8'],
+            'logo' => ['bail', 'sometimes', 'mimes:jpg,jpeg,png', 'dimensions:width=180,height=90'],
+            'name' => ['bail', 'sometimes',  Rule::unique('casinos')->ignore($casino->id), 'string', 'max:255'],
+        ]);
+
+        $validatedData = $request->only(['name', 'bonus_information', 'affiliate_link']);
+
+        if ($request->file('logo')) {
+            $casino->removeExistingLogo();
+            $newLogo = $casino->storeNewLogo($request->file('logo'));
+            $validatedData['logo_url'] = $newLogo;
+        }
+
+        return $casino->update($validatedData) ?
+            ResponseHelper::sendSuccess($casino) : ResponseHelper::serverError("Could not update casion at this time");
     }
 
     // show a single casino
@@ -51,31 +78,6 @@ class CasinoController extends Controller
 
         return $casinos->count() ?
             ResponseHelper::sendSuccess($casinos->get()) : ResponseHelper::notFound("Query returns empty");
-    }
-
-
-    // update
-    public function update(Request $request)
-    {
-
-        $casino = Casino::where('id', $request->casino_id)->first();
-        if (!$casino) {
-            return ResponseHelper::notFound("Invalid Casino Id");
-        }
-
-        $validatedData = $request->validate([
-            'name' => ['sometimes', 'string', 'max:255', 'bail'],
-            'email' => $request->email != $casino->email ? ["sometimes", 'email:rfc,dns', 'unique:casinos'] : ["nullable"],
-            'phone_number' => $request->phone_number != $casino->phone_number ? ["sometimes", new PhoneNumber] : ["nullable"],
-            'password' => ["sometimes", 'string', "min:6", "max:20"],
-        ]);
-
-        if ($request->password) {
-            $validatedData['password'] = bcrypt($request->password);
-        }
-
-        return $casino->update($validatedData) ?
-            ResponseHelper::sendSuccess([], "Casino updated") : ResponseHelper::serverError("Could not updated the casino");
     }
 
     // delete

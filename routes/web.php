@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -24,8 +25,16 @@ Route::get('/', function () {
     ]);
 });
 
+Route::group(['middleware' => 'auth'], function () {
+
+    Route::get('/users', [HomeController::class, 'users'])->name('users');
+    Route::get('/casinos', [HomeController::class, 'casinos'])->name('casinos');
+    Route::get('/listings', [HomeController::class, 'listings'])->name('listings');
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 require __DIR__.'/auth.php';

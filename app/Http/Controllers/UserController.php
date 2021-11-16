@@ -38,8 +38,8 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'password' => 'required',
-            'email' => 'required|string|email|min:5'
+            'password' => ['required', 'string', 'min:8', 'bail'],
+            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'bail'],
         ]);
 
         $credentials = request(['email', 'password']);

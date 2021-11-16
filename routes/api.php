@@ -35,6 +35,6 @@ Route::group(['prefix' => 'casino'], function () {
         Route::post('create',  [CasinoController::class, 'create']);
         Route::get('{casino_id_or_name}/show',  [CasinoController::class, 'show']);
         Route::put('{casino_id}/update',  [CasinoController::class, 'update']);
-        Route::delete('{user_id}/delete', [CasinoController::class, 'delete']);
+        Route::delete('{casino_id}/delete', [CasinoController::class, 'delete']);
     });
 });

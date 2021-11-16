@@ -44,12 +44,6 @@ class CasinoController extends Controller
             ResponseHelper::sendSuccess($casino) : ResponseHelper::notFound("Invalid casino Id or name");
     }
 
-    // show logged in casino
-    public function casinoDetails(Request $request)
-    {
-        return  ResponseHelper::sendSuccess($request->casino());
-    }
-
     // show all casinos
     public function all()
     {

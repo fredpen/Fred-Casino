@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Models\Casino;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 
 class CasinoController extends Controller
 {
@@ -12,24 +14,22 @@ class CasinoController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255', 'bail'],
-            'password' => ['required', 'string', 'min:8', 'bail'],
-            'email' => ['required', 'email:rfc,dns', 'max:255', 'unique:casinos', 'bail'],
+            'name' => ['required', 'unique:casinos', 'string', 'max:255', 'bail'],
+            'logo' => ['required', 'mimes:jpg,jpeg,png', 'dimensions:width=180,height=90'],
+            'bonus_information' => ['required', 'string'],
+            'affiliate_link' => ['required', 'string', 'min:8'],
         ]);
+        $input = $request->only(['name', 'bonus_information', 'affiliate_link']);
 
-        $input = $request->only(['name', 'phone_number', 'email', 'password']);
-        $input['password'] = bcrypt($input['password']);
-        $casino = Casino::create($input);
-
-        if (!$casino) {
-            return ResponseHelper::serverError();
+        if ($request->file('logo')) {
+            $path =  $request->file('logo')->storePublicly('public/casino/logos');
+            $baseUrl = Config::get('app.url');
+            $input['logo_url'] = $baseUrl . Storage::url($path);
         }
 
-        $token = $casino->createToken('casino');
-        $success['token'] = $token->plainTextToken;
-        $success['casino'] = $casino;
-
-        return ResponseHelper::sendSuccess($success);
+        $casino = Casino::create($input);
+        return $casino ?
+            ResponseHelper::sendSuccess($casino) : ResponseHelper::notFound("Casino creation failed");
     }
 
     // show a single casino

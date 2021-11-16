@@ -16,9 +16,9 @@ class CreateCasinosTable extends Migration
         Schema::create('casinos', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('logo_url')->nullable();
-            $table->longText('bonus_information')->nullable();
-            $table->string('affiliate_link')->nullable();
+            $table->string('logo_url');
+            $table->longText('bonus_information');
+            $table->string('affiliate_link');
             $table->timestamps();
         });
     }

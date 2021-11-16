@@ -9,7 +9,7 @@ class CasinoFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->company,
+            'name' => $this->faker->unique()->company,
             "logo_url" => $this->faker->imageUrl,
             'bonus_information' =>  $this->faker->paragraph(3),
             'affiliate_link' =>  $this->faker->url

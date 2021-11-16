@@ -1,20 +1,8 @@
 <?php
 
+use App\Http\Controllers\CasinoController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
 
 // auth
 Route::group(['prefix' => 'auth'], function () {
@@ -27,7 +15,6 @@ Route::group(['prefix' => 'auth'], function () {
     });
 });
 
-
 // user
 Route::group(['prefix' => 'user'], function () {
 
@@ -37,5 +24,17 @@ Route::group(['prefix' => 'user'], function () {
         Route::put('{user_id}/update',  [UserController::class, 'update']);
         Route::delete('{user_id}/delete', [UserController::class, 'delete']);
         Route::get('user-details',  [UserController::class, 'userDetails']);
+    });
+});
+
+// casinos
+Route::group(['prefix' => 'casino'], function () {
+
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::get('all',  [CasinoController::class, 'all']);
+        Route::post('create',  [CasinoController::class, 'create']);
+        Route::get('{casino_id_or_name}/show',  [CasinoController::class, 'show']);
+        Route::put('{casino_id}/update',  [CasinoController::class, 'update']);
+        Route::delete('{user_id}/delete', [CasinoController::class, 'delete']);
     });
 });

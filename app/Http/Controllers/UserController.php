@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Rules\PhoneNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -81,25 +82,27 @@ class UserController extends Controller
             ResponseHelper::sendSuccess($users->get()) : ResponseHelper::notFound("Query returns empty");
     }
 
-
     // update
     public function update(Request $request)
     {
-
         $user = User::where('id', $request->user_id)->first();
         if (!$user) {
             return ResponseHelper::notFound("Invalid User Id");
         }
 
         $validatedData = $request->validate([
-            'name' => ['sometimes', 'string', 'max:255', 'bail'],
-            'email' => $request->email != $user->email ? ["sometimes", 'email:rfc,dns', 'unique:users'] : ["nullable"],
-            'phone_number' => $request->phone_number != $user->phone_number ? ["sometimes", new PhoneNumber] : ["nullable"],
-            'password' => ["sometimes", 'string', "min:6", "max:20"],
+            'name' => ['bail', 'sometimes', 'string', 'max:255', 'bail'],
+            'password' => ['bail', "sometimes", 'string', "min:6", "max:20"],
+            'email' => ['bail', "sometimes", 'email:rfc,dns', Rule::unique('users')->ignore($user->id)],
+            'phone_number' => ['bail', "sometimes", new PhoneNumber,  Rule::unique('users')->ignore($user->id)],
         ]);
 
         if ($request->password) {
             $validatedData['password'] = bcrypt($request->password);
+        }
+
+        if (count($validatedData) < 1) {
+            return ResponseHelper::badRequest("There is nothing to update");
         }
 
         return $user->update($validatedData) ?

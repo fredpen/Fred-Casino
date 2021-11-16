@@ -16,7 +16,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255', 'bail'],
             'phone_number' => ['required', new PhoneNumber],
             'password' => ['required', 'string', 'min:8', 'bail'],
-            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users', 'bail'],
+            'email' => ['required', 'email:rfc,dns', 'max:255', 'unique:users', 'bail'],
         ]);
 
         $input = $request->only(['name', 'phone_number', 'email', 'password']);
@@ -39,7 +39,7 @@ class UserController extends Controller
     {
         $request->validate([
             'password' => ['required', 'string', 'min:8', 'bail'],
-            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'bail'],
+            'email' => ['required', 'email:rfc,dns', 'max:255', 'bail'],
         ]);
 
         $credentials = request(['email', 'password']);
@@ -55,6 +55,34 @@ class UserController extends Controller
             "logged in successfully"
         );
     }
+
+    // update
+    public function update(Request $request)
+    {
+        $user = User::where('id', $request->id)->first();
+        if (!$user) {
+            return ResponseHelper::notFound("Invalid User Id");
+        }
+
+        $validatedData = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255', 'bail'],
+            'email' => $request->email != $user->email ? ["sometimes", 'email:rfc,dns', 'unique:users'] : ["nullable"],
+            'phone_number' => $request->phone_number != $user->phone_number ? ["sometimes", new PhoneNumber] : ["nullable"],
+            'password' => ["sometimes", 'string', "min:6", "max:20"],
+        ]);
+
+        if ($request->password) {
+            $validatedData['password'] = bcrypt($request->password);
+        }
+        $update = $user->update($validatedData);
+
+        if (!$update) {
+            return ResponseHelper::serverError("Could not update the user");
+        }
+
+        return ResponseHelper::sendSuccess([], "User updated");
+    }
+
 
     //logout
     public function logout(Request $request)

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+
     public function register(Request $request)
     {
         $request->validate([
@@ -56,9 +57,35 @@ class UserController extends Controller
         );
     }
 
+    // show a single user
+    public function show(Request $request)
+    {
+        $user = User::where('id', $request->user_id)->first();
+
+        return $user ?
+            ResponseHelper::sendSuccess($user) : ResponseHelper::notFound("Invalid user Id");
+    }
+
+    // show logged in user
+    public function userDetails(Request $request)
+    {
+        return  ResponseHelper::sendSuccess($request->user());
+    }
+
+    // show all users
+    public function all()
+    {
+        $users = User::query();
+
+        return $users->count() ?
+            ResponseHelper::sendSuccess($users->get()) : ResponseHelper::notFound("Query returns empty");
+    }
+
+
     // update
     public function update(Request $request)
     {
+
         $user = User::where('id', $request->user_id)->first();
         if (!$user) {
             return ResponseHelper::notFound("Invalid User Id");

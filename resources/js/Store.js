@@ -5,9 +5,22 @@ const state = {
     users: [],
     listings: [],
     casinos: [],
+    alert: {
+        status: false,
+        message: null,
+        type: "success",
+    },
 };
 
 const mutations = {
+    updateAlert(state, payload) {
+        state.alert = {
+            status: payload.status,
+            message: payload.message,
+            type: payload.type,
+        };
+    },
+
     updateStore(state, payload) {
         state[payload.data] = payload.value;
     },

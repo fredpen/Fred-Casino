@@ -1,7 +1,8 @@
 import { API_BASE_URL } from "./endPoints";
+import Store from "../Store"
 
-// todo get token from store
-let token = localStorage.getItem("token");
+
+let token = Store.state.token ? Store.state.token : localStorage.getItem("token");
 
 const instance = axios.create({
     baseURL: API_BASE_URL,

@@ -1,9 +1,6 @@
 <template>
 <Head title="Dashboard" />
 
-<Alert v-if="alert && alert.status" :alert="alert" @closeModal="alert.status = false">
-</Alert>
-
 <BreezeAuthenticatedLayout>
     <template #header>
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -134,13 +131,12 @@ import {
     Dynamic_endpoints,
     GET_ALL_USERS
 } from '@/plugins/endPoints';
-import Alert from '@/components/Alert.vue';
 
 export default {
     components: {
         BreezeAuthenticatedLayout,
         Head,
-        Alert
+
     },
 
     data: () => {
@@ -148,11 +144,6 @@ export default {
             isEditModal: false,
             activeUser: {},
             password: "",
-            alert: {
-                status: false,
-                message: null,
-                type: "success"
-            },
             activeUserIndex: null,
             tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",
         }
@@ -230,11 +221,11 @@ export default {
         },
 
         displayAlert(status, message, type = "success") {
-            return this.alert = {
+            return this.$store.commit('updateAlert', {
                 status: status,
                 message: message,
-                type: type
-            }
+                type: type,
+            })
         },
 
         subString(string, length) {

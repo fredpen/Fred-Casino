@@ -35,7 +35,13 @@ export default {
     },
 
     created() {
+        if (this.$store.state.token) return;
+
         localStorage.setItem("token", this.token);
+        return this.$store.commit("updateStore", {
+            data: "token",
+            value: this.token,
+        });
     },
 };
 </script>

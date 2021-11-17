@@ -1,10 +1,10 @@
-import Axios from "axios";
+import { API_BASE_URL } from "./endPoints";
 
+// todo get token from store
 let token = localStorage.getItem("token");
-let BASE_URL = "http://fred-casino.test";
 
-const instance = Axios.create({
-    baseURL: BASE_URL,
+const instance = axios.create({
+    baseURL: API_BASE_URL,
     timeout: 100000000,
     withCredentials: true,
     headers: {
@@ -13,24 +13,33 @@ const instance = Axios.create({
     },
 });
 
-function getCall(url, params) {
-    return instance.get(url, { params: params });
+instance.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response.status === 401) {
+            // if token expired
+            return window.location.replace(`${BASE_URL}`);
+        }
+        return Promise.reject(error);
+    }
+);
+
+async function getCall(url, params) {
+    return await instance.get(url, { params: params });
 }
 
-function postCall(url, params) {
-    return instance.post(url, params);
+async function postCall(url, params) {
+    return await instance.post(url, params);
 }
 
-function putCall(url, params) {
-    return instance.put(url);
+async function putCall(url, params) {
+    return await instance.put(url, params);
 }
 
-function deleteCall(url, params) {
-    return instance.delete(url, params);
+async function deleteCall(url, params) {
+    return await instance.delete(url, params);
 }
 
-function afterCall(status) {
-    return status == 401 ? router.push("Login") : false;
-}
-
-export { getCall, postCall, putCall, deleteCall, afterCall };
+export { getCall, postCall, putCall, deleteCall };

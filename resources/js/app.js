@@ -16,6 +16,7 @@ createInertiaApp({
         return createApp({ render: () => h(app, props), store })
             .use(plugin)
             .use(Vuex)
+            .use(store)
             .mixin({ methods: { route } })
             .mount(el);
     },

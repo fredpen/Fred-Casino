@@ -12,6 +12,10 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+
+                <!-- new user button -->
+                <button @click="isCreateModal = true" class="px-6 py-2 text-indigo-700 border-2 border-indigo-500 rounded-full hover:bg-indigo-500 hover:text-indigo-100">Create a new User</button>
+
                 <div class="flex flex-col mt-8">
                     <div class="py-2 -my-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
                         <div class="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow sm:rounded-lg">
@@ -46,7 +50,7 @@
                                         </td>
 
                                         <td :class="tdTextStyle">
-                                            <div class="text-sm leading-5 text-gray-500"> {{subString(item.created_at, 10)}}</div>
+                                            <div class="text-sm leading-5 text-gray-500"> {{item.created_at ? subString(item.created_at, 10) : 'few seconds ago'}}</div>
                                         </td>
 
                                         <td :class="tdTextStyle">
@@ -68,6 +72,43 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- create user modal -->
+    <div v-if="isCreateModal" class="container flex justify-center mx-auto">
+        <button class="px-6 py-2 text-white bg-blue-600 rounded shadow-xl" type="button">open
+            model</button>
+        <div class="absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50">
+            <div class="max-w-5xl  w-4/5 p-6 bg-white">
+                <div class="flex items-center justify-between">
+                    <h3 class="my-3 text-center">Create a new User</h3>
+                    <svg @click="isCreateModal = false" xmlns="http://www.w3.org/2000/svg" class="link w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+
+                <div class="my-4">
+                    <div class="grid gap-4 grid-cols-2 mb-5">
+                        <div> <label for="name" class="block font-bold text-gray-600">Name</label>
+                            <input type="text" name="name" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.name"></div>
+                        <div> <label for="phone_number" class="block font-bold text-gray-600">Phone</label>
+                            <input type="phone" name="phone_number" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.phone_number"></div>
+                    </div>
+
+                    <div class="grid gap-4 grid-cols-2 mb-5">
+                        <div> <label for="email" class="block font-bold text-gray-600">Email</label>
+                            <input type="email" name="email" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.email"></div>
+                        <div> <label for="password" class="block font-bold text-gray-600">password</label>
+                            <input type="password" name="password" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.password"></div>
+
+                    </div>
+
+                    <div class="max-w-2xl p-6 bg-white">
+                        <button @click="createUser" class="link block p-3 font-bold text-white bg-blue-500 rounded-l">{{newUser.name ? `Create ${newUser.name} as a User` : 'Create User'}}</button>
                     </div>
                 </div>
             </div>
@@ -122,12 +163,14 @@ import {
 import {
     deleteCall,
     getCall,
+    postCall,
     putCall
 } from "../../plugins/apiCall";
 import {
     Head
 } from "@inertiajs/inertia-vue3";
 import {
+    CREATE_A_USER,
     Dynamic_endpoints,
     GET_ALL_USERS
 } from '@/plugins/endPoints';
@@ -136,7 +179,6 @@ export default {
     components: {
         BreezeAuthenticatedLayout,
         Head,
-
     },
 
     data: () => {
@@ -144,6 +186,9 @@ export default {
             isEditModal: false,
             activeUser: {},
             password: "",
+            isCreateModal: false,
+            newUser: {
+            },
             activeUserIndex: null,
             tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",
         }
@@ -217,6 +262,21 @@ export default {
                 .catch((error) => {
                     this.isEditModal = false
                     return this.displayAlert(true, error.response.data, "error")
+                });
+        },
+
+        createUser() {
+            if (!this.newUser) return false;
+            // return console.log(this.newUser);;
+            postCall(CREATE_A_USER, this.newUser)
+                .then((response) => {
+                    this.displayAlert(true, "User Created !!")
+                    return this.$store.commit('createSingleUserInStore', response.data.data.user)
+                })
+                .catch((error) => {
+                    return this.displayAlert(true, error.response.data, "error")
+                }).finally(() => {
+                    this.isCreateModal = false
                 });
         },
 

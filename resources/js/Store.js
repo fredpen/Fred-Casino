@@ -29,6 +29,10 @@ const mutations = {
         state.users[payload.index] = payload.value;
     },
 
+    createSingleUserInStore(state, payload) {
+        state.users.push(payload);
+    },
+
     deleteSingleUser(state, index) {
         state.users.splice(index, 1);
     },

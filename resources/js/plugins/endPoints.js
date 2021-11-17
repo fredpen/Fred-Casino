@@ -7,6 +7,7 @@ export const LOGOUT = `${API_BASE_URL}auth/logout`;
 
 // Admin - Users
 export const GET_ALL_USERS = `${API_BASE_URL}user/all`;
+export const CREATE_A_USER = `${API_BASE_URL}auth/register`;
 
 
 

@@ -16,7 +16,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'bail'],
-            'phone_number' => ['required', new PhoneNumber],
+            'phone_number' => ['required', 'unique:users', new PhoneNumber],
             'password' => ['required', 'string', 'min:8', 'bail'],
             'email' => ['required', 'email:rfc,dns', 'max:255', 'unique:users', 'bail'],
         ]);

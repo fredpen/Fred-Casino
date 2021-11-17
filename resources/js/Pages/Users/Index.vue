@@ -22,12 +22,23 @@
 
 <script>
 import BreezeAuthenticatedLayout from "@/Layouts/Authenticated.vue";
+import { getCall } from "../../plugins/apiCall";
 import { Head } from "@inertiajs/inertia-vue3";
 
 export default {
     components: {
         BreezeAuthenticatedLayout,
         Head,
+    },
+
+    created() {
+        getCall("api/countries")
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     },
 };
 </script>

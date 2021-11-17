@@ -21,13 +21,21 @@
 </template>
 
 <script>
-import BreezeAuthenticatedLayout from '@/Layouts/Authenticated.vue'
-import { Head } from '@inertiajs/inertia-vue3';
+import BreezeAuthenticatedLayout from "@/Layouts/Authenticated.vue";
+import { Head } from "@inertiajs/inertia-vue3";
 
 export default {
     components: {
         BreezeAuthenticatedLayout,
         Head,
     },
-}
+
+    props: {
+        token: String,
+    },
+
+    created() {
+        localStorage.setItem("token", this.token);
+    },
+};
 </script>

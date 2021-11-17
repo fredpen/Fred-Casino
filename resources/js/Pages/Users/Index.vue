@@ -92,6 +92,7 @@
                 </div>
 
                 <div class="my-4">
+                    <h6 v-if="canCreateUser !== true" class="my-4 text-center text-red-700">{{canCreateUser}}</h6>
                     <div class="grid gap-4 grid-cols-2 mb-5">
                         <div> <label for="name" class="block font-bold text-gray-600">Name</label>
                             <input type="text" name="name" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.name"></div>
@@ -108,7 +109,9 @@
                     </div>
 
                     <div class="max-w-2xl p-6 bg-white">
-                        <button @click="createUser" class="link block p-3 font-bold text-white bg-blue-500 rounded-l">{{newUser.name ? `Create ${newUser.name} as a User` : 'Create User'}}</button>
+                        <button @click="createUser" :disabled="canCreateUser === true ? true : 'disabled'" class="link block p-3 font-bold text-white bg-blue-500 rounded-l">
+                            {{newUser.name ? `Create ${newUser.name}` : 'Create User'}}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -129,6 +132,7 @@
                 </div>
 
                 <div class="my-4">
+                    <h6 v-if="canUpdateUser !== true" class="my-4 text-center text-red-700">{{canUpdateUser}}</h6>
                     <div class="grid gap-4 grid-cols-2 mb-5">
                         <div> <label for="name" class="block font-bold text-gray-600">Name</label>
                             <input type="text" name="name" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="activeUser.name"></div>
@@ -145,7 +149,7 @@
                     </div>
 
                     <div class="max-w-2xl p-6 bg-white">
-                        <button @click="updateUser" class="link block p-3 font-bold text-white bg-blue-500 rounded-l">Submit</button>
+                        <button @click="updateUser" :disabled="canUpdateUser === true ? true : 'disabled'" class="link block p-3 font-bold text-white bg-blue-500 rounded-l">Submit</button>
                     </div>
                 </div>
             </div>
@@ -187,14 +191,30 @@ export default {
             activeUser: {},
             password: "",
             isCreateModal: false,
-            newUser: {
-            },
+            newUser: {},
             activeUserIndex: null,
             tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",
         }
     },
 
     computed: {
+        canCreateUser() {
+            if (!this.newUser.name || this.newUser.name.length < 5) return "Name is required";
+            if (!this.newUser.phone_number || this.newUser.phone_number.length < 11) return "Phone is required";
+            if (!this.newUser.email || this.newUser.name.email < 5) return "Email is required";
+            if (!this.newUser.password || this.newUser.name.password < 5) return "Password is required";
+
+            return true;
+        },
+
+        canUpdateUser() {
+            if (!this.activeUser.name || this.activeUser.name.length < 5) return "Name is required";
+            if (!this.activeUser.phone_number || this.activeUser.phone_number.length < 11) return "Phone is required";
+            if (!this.activeUser.email || this.activeUser.name.email < 5) return "Email is required";
+
+            return true;
+        },
+
         tableHead: () => ["SN", "Name", "Email", "Phone", "Joined On", "Status", "Edit", "Delete"],
         users() {
             return this.$store.state.users;

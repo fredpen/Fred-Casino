@@ -1,5 +1,5 @@
 <template>
-<Head title="Dashboard" />
+<Head title="Users Management" />
 
 <BreezeAuthenticatedLayout>
     <template #header>
@@ -83,7 +83,7 @@
         <button class="px-6 py-2 text-white bg-blue-600 rounded shadow-xl" type="button">open
             model</button>
         <div class="absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50">
-            <div class="max-w-5xl  w-4/5 p-6 bg-white">
+            <div class="max-w-5xl  w-2/5 p-6 bg-white">
                 <div class="flex items-center justify-between">
                     <h3 class="my-3 text-center">Create a new User</h3>
                     <svg @click="isCreateModal = false" xmlns="http://www.w3.org/2000/svg" class="link w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,22 +93,19 @@
 
                 <div class="my-4">
                     <h6 v-if="canCreateUser !== true" class="my-4 text-center text-red-700">{{canCreateUser}}</h6>
-                    <div class="grid gap-4 grid-cols-2 mb-5">
-                        <div> <label for="name" class="block font-bold text-gray-600">Name</label>
-                            <input type="text" name="name" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.name"></div>
-                        <div> <label for="phone_number" class="block font-bold text-gray-600">Phone</label>
-                            <input type="phone" name="phone_number" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.phone_number"></div>
-                    </div>
+                    <div class="my-5"> <label for="name" class="block font-bold text-gray-600">Name</label>
+                        <input type="text" name="name" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.name"></div>
 
-                    <div class="grid gap-4 grid-cols-2 mb-5">
-                        <div> <label for="email" class="block font-bold text-gray-600">Email</label>
-                            <input type="email" name="email" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.email"></div>
-                        <div> <label for="password" class="block font-bold text-gray-600">password</label>
-                            <input type="password" name="password" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.password"></div>
+                    <div class="my-5"> <label for="phone_number" class="block font-bold text-gray-600">Phone</label>
+                        <input type="phone" name="phone_number" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.phone_number"></div>
 
-                    </div>
+                    <div class="my-5"> <label for="email" class="block font-bold text-gray-600">Email</label>
+                        <input type="email" name="email" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.email"></div>
 
-                    <div class="max-w-2xl p-6 bg-white">
+                    <div class="my-5"> <label for="password" class="block font-bold text-gray-600">password</label>
+                        <input type="password" name="password" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.password"></div>
+
+                    <div class="max-w-2xl p-6 bg-white my-5">
                         <button @click="createUser" :disabled="canCreateUser === true ? true : 'disabled'" class="link block p-3 font-bold text-white bg-blue-500 rounded-l">
                             {{newUser.name ? `Create ${newUser.name}` : 'Create User'}}
                         </button>
@@ -136,8 +133,6 @@
                     <div class="grid gap-4 grid-cols-2 mb-5">
                         <div> <label for="name" class="block font-bold text-gray-600">Name</label>
                             <input type="text" name="name" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="activeUser.name"></div>
-                        <div> <label for="Joined On" class="block font-bold text-gray-600">Joined On</label>
-                            <input type="text" disabled name="name" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="activeUser.created_at"></div>
                     </div>
 
                     <div class="grid gap-4 grid-cols-2 mb-5">
@@ -145,7 +140,6 @@
                             <input type="email" name="email" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="activeUser.email"></div>
                         <div> <label for="phone_number" class="block font-bold text-gray-600">Phone</label>
                             <input type="phone" name="phone_number" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="activeUser.phone_number"></div>
-
                     </div>
 
                     <div class="max-w-2xl p-6 bg-white">
@@ -235,7 +229,6 @@ export default {
                     })
                 })
                 .catch((error) => {
-                    this.isEditModal = false
                     return this.displayAlert(true, error.response.data, "error")
                 });
         },

@@ -90,13 +90,9 @@ export default {
 
     methods: {
         submit() {
-            axios
-                .get("http://fred-casino.test/sanctum/csrf-cookie")
-                .then((response) => {
-                    this.form.post(this.route("login"), {
-                        onFinish: () => this.form.reset("password"),
-                    });
-                });
+            this.form.post(this.route("login"), {
+                onFinish: () => this.form.reset("password"),
+            });
         },
     },
 };

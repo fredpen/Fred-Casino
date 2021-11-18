@@ -9,10 +9,18 @@ export const LOGOUT = `${API_BASE_URL}auth/logout`;
 export const GET_ALL_USERS = `${API_BASE_URL}user/all`;
 export const CREATE_A_USER = `${API_BASE_URL}auth/register`;
 
+//casinos
+export const GET_ALL_CASINOS = `${API_BASE_URL}casino/all`;
+export const CREATE_A_CASINO = `${API_BASE_URL}casino/create`;
 
 
 export const Dynamic_endpoints = {
+    // users
     UPDATE_USER_BY_ID: (id) => `${API_BASE_URL}user/${id}/update`,
     DELETE_USER_BY_ID: (id) => `${API_BASE_URL}user/${id}/delete`,
+
+    // casinos
+    UPDATE_CASINO_BY_ID: (id) => `${API_BASE_URL}casino/${id}/update`,
+    DELETE_CASINO_BY_ID: (id) => `${API_BASE_URL}casino/${id}/delete`,
 
 };

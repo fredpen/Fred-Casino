@@ -25,6 +25,7 @@ const mutations = {
         state[payload.data] = payload.value;
     },
 
+    // users
     updateSingleUserInStore(state, payload) {
         state.users[payload.index] = payload.value;
     },
@@ -35,6 +36,19 @@ const mutations = {
 
     deleteSingleUser(state, index) {
         state.users.splice(index, 1);
+    },
+
+    // casinos
+    updateSingleCasinoInStore(state, payload) {
+        state.casinos[payload.index] = payload.value;
+    },
+
+    createSingleCasinoInStore(state, payload) {
+        state.casinos.push(payload);
+    },
+
+    deleteSingleCasino(state, index) {
+        state.casinos.splice(index, 1);
     },
 };
 

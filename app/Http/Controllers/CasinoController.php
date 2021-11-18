@@ -75,9 +75,11 @@ class CasinoController extends Controller
     public function all()
     {
         $casinos = Casino::query();
+        if (!$casinos->count()) {
+            return  ResponseHelper::notFound("Query returns empty");
+        }
 
-        return $casinos->count() ?
-            ResponseHelper::sendSuccess($casinos->get()) : ResponseHelper::notFound("Query returns empty");
+        return ResponseHelper::sendSuccess($casinos->orderBy('created_at', 'desc')->get());
     }
 
     // delete

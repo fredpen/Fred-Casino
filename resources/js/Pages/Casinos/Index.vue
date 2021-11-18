@@ -110,6 +110,11 @@
                     </div>
 
                     <div class="mt-4">
+                        <BreezeLabel class="text-sm text-red-600" for="logo" value="logo (size must be 180 * 90)" />
+                        <input class="mt-1 block w-full" id="file" ref="file" type="file" />
+                    </div>
+
+                    <div class="mt-4">
                         <BreezeLabel for="bonus_information" value="Bonus Information" />
                         <BreezeTextBox id="bonus_information" type="text" class="mt-1 block w-full" v-model="newCasino.bonus_information" />
                     </div>
@@ -154,6 +159,11 @@
                     </div>
 
                     <div class="mt-4">
+                        <BreezeLabel class="text-sm text-red-600" for="logo" value="logo (size must be 180 * 90)" />
+                        <input class="mt-1 block w-full" id="updateFile" ref="updateFile" type="file" />
+                    </div>
+
+                    <div class="mt-4">
                         <BreezeLabel for="bonus_information" value="Bonus Information" />
                         <BreezeTextBox id="bonus_information" type="text" class="mt-1 block w-full" v-model="activeCasino.bonus_information" />
                     </div>
@@ -190,6 +200,7 @@ import {
     Head
 } from "@inertiajs/inertia-vue3";
 import {
+    CREATE_A_CASINO,
     Dynamic_endpoints,
     GET_ALL_CASINOS,
 } from '@/plugins/endPoints';
@@ -210,7 +221,11 @@ export default {
             activeCasino: {},
             password: "",
             isCreateModal: false,
-            newCasino: {},
+            newCasino: {
+                name: "Fred olad",
+                bonus_information: "https://laravel.com/docs/8.x/validation",
+                affiliate_link: "https://laravel.com/docs/8.x/validation"
+            },
             activeCasinoIndex: null,
             tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",
             buttonStyle: "inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray transition ease-in-out duration-150"
@@ -222,7 +237,6 @@ export default {
             if (!this.newCasino.name || this.newCasino.name.length < 5) return "Name is required";
             if (!this.newCasino.affiliate_link || this.newCasino.affiliate_link < 5) return "Affiliate link is required";
             if (!this.newCasino.bonus_information || this.newCasino.bonus_information < 5) return "Bonus information is required";
-            if (!this.newCasino.logo || this.newCasino.logo.length < 11) return "logo is required";
 
             return true;
         },
@@ -256,7 +270,8 @@ export default {
                     })
                 })
                 .catch((error) => {
-                    return this.displayAlert(true, error.response.data, "error")
+                    let errorMessage = error.response.data.errors ? error.response.data.errors : error.response.data.message;
+                    return this.displayAlert(true, errorMessage, "error")
                 });
         },
 
@@ -270,7 +285,8 @@ export default {
                 })
                 .catch((error) => {
                     this.isEditModal = false
-                    return this.displayAlert(true, error.response.data.message, "error")
+                    let errorMessage = error.response.data.errors ? error.response.data.errors : error.response.data.message;
+                    return this.displayAlert(true, errorMessage, "error")
                 });
         },
 
@@ -285,44 +301,63 @@ export default {
         },
 
         updateCasino() {
+            let requestData = new FormData();
+            if (this.$refs.updateFile.files[0]) {
+                requestData.append('logo', this.$refs.updateFile.files[0]);
+            }
 
-            // return console.log(this.activeCasino);
-            putCall(Dynamic_endpoints.UPDATE_CASINO_BY_ID(this.activeCasino.id), {
-                    name: this.activeCasino.name,
-                    email: this.activeCasino.email,
-                    phone_number: this.activeCasino.phone_number,
+            requestData.append('name', this.activeCasino.name);
+            requestData.append('affiliate_link', this.activeCasino.affiliate_link);
+            requestData.append('bonus_information', this.activeCasino.bonus_information);
+
+            postCall(Dynamic_endpoints.UPDATE_CASINO_BY_ID(this.activeCasino.id), requestData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 })
-                .then(() => {
+                .then((response) => {
                     this.isEditModal = false
                     this.displayAlert(true, "Casino updated !!")
                     return this.$store.commit('updateSingleCasinoInStore', {
                         index: this.activeCasinoIndex,
-                        value: this.activeCasino
+                        value: response.data.data
                     })
                 })
                 .catch((error) => {
                     this.isEditModal = false
-                    return this.displayAlert(true, error.response.data, "error")
+                    let errorMessage = error.response.data.errors ? error.response.data.errors : error.response.data.message;
+                    return this.displayAlert(true, errorMessage, "error")
                 });
         },
 
         createCasino() {
-            if (!this.newCasino) return false;
-            postCall(CREATE_A_USER, this.newCasino)
+            let requestData = new FormData();
+            requestData.append('name', this.newCasino.name);
+            requestData.append('logo', this.$refs.file.files[0]);
+            requestData.append('affiliate_link', this.newCasino.affiliate_link);
+            requestData.append('bonus_information', this.newCasino.bonus_information);
+
+            postCall(CREATE_A_CASINO, requestData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
                 .then((response) => {
                     this.displayAlert(true, "Casino Created !!")
                     return this.$store.commit('createSingleCasinoInStore', response.data.data)
                 })
                 .catch((error) => {
-                    return this.displayAlert(true, error.response.data, "error")
+                    let errorMessage = error.response.data.errors ? error.response.data.errors : error.response.data.message;
+                    return this.displayAlert(true, errorMessage, "error")
                 }).finally(() => {
                     this.isCreateModal = false
                 });
         },
 
-        displayAlert(status, message, type = "success") {
+        displayAlert(statusType, message, type = "success") {
+            this.isEditModal = this.isCreateModal = false;
             return this.$store.commit('updateAlert', {
-                status: status,
+                status: statusType,
                 message: message,
                 type: type,
             })

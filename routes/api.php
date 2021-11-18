@@ -33,7 +33,7 @@ Route::group(['prefix' => 'casino', 'middleware' => 'auth:sanctum'], function ()
     Route::get('all',  [CasinoController::class, 'all']);
     Route::post('create',  [CasinoController::class, 'create']);
     Route::get('{casino_id_or_name}/show',  [CasinoController::class, 'show']);
-    Route::put('{casino_id}/update',  [CasinoController::class, 'update']);
+    Route::post('{casino_id}/update',  [CasinoController::class, 'update']);
     Route::delete('{casino_id}/delete', [CasinoController::class, 'delete']);
 });
 

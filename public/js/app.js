@@ -23033,7 +23033,11 @@ __webpack_require__.r(__webpack_exports__);
       activeCasino: {},
       password: "",
       isCreateModal: false,
-      newCasino: {},
+      newCasino: {
+        name: "Fred olad",
+        bonus_information: "https://laravel.com/docs/8.x/validation",
+        affiliate_link: "https://laravel.com/docs/8.x/validation"
+      },
       activeCasinoIndex: null,
       tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",
       buttonStyle: "inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray transition ease-in-out duration-150"
@@ -23044,7 +23048,6 @@ __webpack_require__.r(__webpack_exports__);
       if (!this.newCasino.name || this.newCasino.name.length < 5) return "Name is required";
       if (!this.newCasino.affiliate_link || this.newCasino.affiliate_link < 5) return "Affiliate link is required";
       if (!this.newCasino.bonus_information || this.newCasino.bonus_information < 5) return "Bonus information is required";
-      if (!this.newCasino.logo || this.newCasino.logo.length < 11) return "logo is required";
       return true;
     },
     canUpdate: function canUpdate() {
@@ -23074,7 +23077,8 @@ __webpack_require__.r(__webpack_exports__);
           value: response.data.data
         });
       })["catch"](function (error) {
-        return _this.displayAlert(true, error.response.data, "error");
+        var errorMessage = error.response.data.errors ? error.response.data.errors : error.response.data.message;
+        return _this.displayAlert(true, errorMessage, "error");
       });
     },
     deleteCasino: function deleteCasino(index) {
@@ -23089,7 +23093,8 @@ __webpack_require__.r(__webpack_exports__);
         return _this2.$store.commit('deleteSingleCasino', _this2.activeCasinoIndex);
       })["catch"](function (error) {
         _this2.isEditModal = false;
-        return _this2.displayAlert(true, error.response.data.message, "error");
+        var errorMessage = error.response.data.errors ? error.response.data.errors : error.response.data.message;
+        return _this2.displayAlert(true, errorMessage, "error");
       });
     },
     setActiveCasino: function setActiveCasino(index) {
@@ -23103,43 +23108,62 @@ __webpack_require__.r(__webpack_exports__);
     updateCasino: function updateCasino() {
       var _this3 = this;
 
-      // return console.log(this.activeCasino);
-      (0,_plugins_apiCall__WEBPACK_IMPORTED_MODULE_6__.putCall)(_plugins_endPoints__WEBPACK_IMPORTED_MODULE_8__.Dynamic_endpoints.UPDATE_CASINO_BY_ID(this.activeCasino.id), {
-        name: this.activeCasino.name,
-        email: this.activeCasino.email,
-        phone_number: this.activeCasino.phone_number
-      }).then(function () {
+      var requestData = new FormData();
+
+      if (this.$refs.updateFile.files[0]) {
+        requestData.append('logo', this.$refs.updateFile.files[0]);
+      }
+
+      requestData.append('name', this.activeCasino.name);
+      requestData.append('affiliate_link', this.activeCasino.affiliate_link);
+      requestData.append('bonus_information', this.activeCasino.bonus_information);
+      (0,_plugins_apiCall__WEBPACK_IMPORTED_MODULE_6__.postCall)(_plugins_endPoints__WEBPACK_IMPORTED_MODULE_8__.Dynamic_endpoints.UPDATE_CASINO_BY_ID(this.activeCasino.id), requestData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(function (response) {
         _this3.isEditModal = false;
 
         _this3.displayAlert(true, "Casino updated !!");
 
         return _this3.$store.commit('updateSingleCasinoInStore', {
           index: _this3.activeCasinoIndex,
-          value: _this3.activeCasino
+          value: response.data.data
         });
       })["catch"](function (error) {
         _this3.isEditModal = false;
-        return _this3.displayAlert(true, error.response.data, "error");
+        var errorMessage = error.response.data.errors ? error.response.data.errors : error.response.data.message;
+        return _this3.displayAlert(true, errorMessage, "error");
       });
     },
     createCasino: function createCasino() {
       var _this4 = this;
 
-      if (!this.newCasino) return false;
-      (0,_plugins_apiCall__WEBPACK_IMPORTED_MODULE_6__.postCall)(CREATE_A_USER, this.newCasino).then(function (response) {
+      var requestData = new FormData();
+      requestData.append('name', this.newCasino.name);
+      requestData.append('logo', this.$refs.file.files[0]);
+      requestData.append('affiliate_link', this.newCasino.affiliate_link);
+      requestData.append('bonus_information', this.newCasino.bonus_information);
+      (0,_plugins_apiCall__WEBPACK_IMPORTED_MODULE_6__.postCall)(_plugins_endPoints__WEBPACK_IMPORTED_MODULE_8__.CREATE_A_CASINO, requestData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(function (response) {
         _this4.displayAlert(true, "Casino Created !!");
 
         return _this4.$store.commit('createSingleCasinoInStore', response.data.data);
       })["catch"](function (error) {
-        return _this4.displayAlert(true, error.response.data, "error");
+        var errorMessage = error.response.data.errors ? error.response.data.errors : error.response.data.message;
+        return _this4.displayAlert(true, errorMessage, "error");
       })["finally"](function () {
         _this4.isCreateModal = false;
       });
     },
-    displayAlert: function displayAlert(status, message) {
+    displayAlert: function displayAlert(statusType, message) {
       var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "success";
+      this.isEditModal = this.isCreateModal = false;
       return this.$store.commit('updateAlert', {
-        status: status,
+        status: statusType,
         message: message,
         type: type
       });
@@ -23316,14 +23340,14 @@ __webpack_require__.r(__webpack_exports__);
         name: this.activeUser.name,
         email: this.activeUser.email,
         phone_number: this.activeUser.phone_number
-      }).then(function () {
+      }).then(function (response) {
         _this3.isEditModal = false;
 
         _this3.displayAlert(true, "User updated !!");
 
         return _this3.$store.commit('updateSingleUserInStore', {
           index: _this3.activeUserIndex,
-          value: _this3.activeUser
+          value: response.data.data
         });
       })["catch"](function (error) {
         _this3.isEditModal = false;
@@ -24878,35 +24902,44 @@ var _hoisted_38 = {
   "class": "mt-4"
 };
 var _hoisted_39 = {
-  "class": "mt-4"
+  "class": "mt-1 block w-full",
+  id: "file",
+  ref: "file",
+  type: "file"
 };
 var _hoisted_40 = {
+  "class": "mt-4"
+};
+var _hoisted_41 = {
+  "class": "mt-4"
+};
+var _hoisted_42 = {
   key: 1,
   "class": "container flex justify-center mx-auto"
 };
 
-var _hoisted_41 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+var _hoisted_43 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
   "class": "px-6 py-2 text-white bg-blue-600 rounded shadow-xl",
   type: "button"
 }, "open model", -1
 /* HOISTED */
 );
 
-var _hoisted_42 = {
+var _hoisted_44 = {
   "class": "absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50"
 };
-var _hoisted_43 = {
+var _hoisted_45 = {
   "class": "w-2/5 p-6 bg-white"
 };
-var _hoisted_44 = {
+var _hoisted_46 = {
   "class": "flex items-center justify-between"
 };
-var _hoisted_45 = {
+var _hoisted_47 = {
   "class": "my-3 flex-shrink-0 w-10 h-10"
 };
-var _hoisted_46 = ["src", "alt"];
+var _hoisted_48 = ["src", "alt"];
 
-var _hoisted_47 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
+var _hoisted_49 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
   "stroke-linecap": "round",
   "stroke-linejoin": "round",
   "stroke-width": "2",
@@ -24915,21 +24948,30 @@ var _hoisted_47 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_48 = [_hoisted_47];
-var _hoisted_49 = {
+var _hoisted_50 = [_hoisted_49];
+var _hoisted_51 = {
   "class": "my-4"
 };
-var _hoisted_50 = {
+var _hoisted_52 = {
   key: 0,
   "class": "my-4 text-center text-red-700"
 };
-var _hoisted_51 = {
-  "class": "mt-4"
-};
-var _hoisted_52 = {
-  "class": "mt-4"
-};
 var _hoisted_53 = {
+  "class": "mt-4"
+};
+var _hoisted_54 = {
+  "class": "mt-4"
+};
+var _hoisted_55 = {
+  "class": "mt-4"
+};
+var _hoisted_56 = {
+  "class": "mt-1 block w-full",
+  id: "updateFile",
+  ref: "updateFile",
+  type: "file"
+};
+var _hoisted_57 = {
   "class": "mt-4"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -25063,6 +25105,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       }, null, 8
       /* PROPS */
       , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
+        "class": "text-sm text-red-600",
+        "for": "logo",
+        value: "logo (size must be 180 * 90)"
+      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", _hoisted_39, null, 512
+      /* NEED_PATCH */
+      )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
         "for": "bonus_information",
         value: "Bonus Information"
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeTextBox, {
@@ -25075,7 +25123,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         })
       }, null, 8
       /* PROPS */
-      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_39, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeButton, {
+      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_41, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeButton, {
         onClick: $options.createCasino,
         disabled: $options.canCreate === true ? false : 'disabled',
         "class": "my-4"
@@ -25090,13 +25138,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
       }, 8
       /* PROPS */
-      , ["onClick", "disabled"])])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _ctx.isEditModal ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_40, [_hoisted_41, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_42, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_43, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+      , ["onClick", "disabled"])])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _ctx.isEditModal ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_42, [_hoisted_43, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_46, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_47, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
         "class": "w-10 h-10 rounded-full",
         src: _ctx.activeCasino.logo_url,
         alt: _ctx.activeCasino.name
       }, null, 8
       /* PROPS */
-      , _hoisted_46)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, " Edit " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.activeCasino.name), 1
+      , _hoisted_48)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, " Edit " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.activeCasino.name), 1
       /* TEXT */
       ), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
         onClick: _cache[5] || (_cache[5] = function ($event) {
@@ -25107,9 +25155,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         fill: "none",
         viewBox: "0 0 24 24",
         stroke: "currentColor"
-      }, _hoisted_48))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_49, [$options.canUpdate !== true ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("h6", _hoisted_50, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.canUpdate), 1
+      }, _hoisted_50))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_51, [$options.canUpdate !== true ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("h6", _hoisted_52, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.canUpdate), 1
       /* TEXT */
-      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_51, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
+      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
         "for": "name",
         value: "Name"
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeInput, {
@@ -25123,7 +25171,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         autocomplete: "name"
       }, null, 8
       /* PROPS */
-      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_52, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
+      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_54, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
         "for": "affiliate_link",
         value: "Affiliate link"
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeInput, {
@@ -25136,7 +25184,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         })
       }, null, 8
       /* PROPS */
-      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
+      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_55, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
+        "class": "text-sm text-red-600",
+        "for": "logo",
+        value: "logo (size must be 180 * 90)"
+      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", _hoisted_56, null, 512
+      /* NEED_PATCH */
+      )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
         "for": "bonus_information",
         value: "Bonus Information"
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeTextBox, {
@@ -26006,7 +26060,7 @@ var mutations = {
     state.users[payload.index] = payload.value;
   },
   createSingleUserInStore: function createSingleUserInStore(state, payload) {
-    state.users.push(payload);
+    state.users.unshift(payload);
   },
   deleteSingleUser: function deleteSingleUser(state, index) {
     state.users.splice(index, 1);
@@ -26016,7 +26070,7 @@ var mutations = {
     state.casinos[payload.index] = payload.value;
   },
   createSingleCasinoInStore: function createSingleCasinoInStore(state, payload) {
-    state.casinos.push(payload);
+    state.casinos.unshift(payload);
   },
   deleteSingleCasino: function deleteSingleCasino(state, index) {
     state.casinos.splice(index, 1);

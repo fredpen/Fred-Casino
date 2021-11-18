@@ -31,7 +31,7 @@ const mutations = {
     },
 
     createSingleUserInStore(state, payload) {
-        state.users.push(payload);
+        state.users.unshift(payload);
     },
 
     deleteSingleUser(state, index) {
@@ -44,7 +44,7 @@ const mutations = {
     },
 
     createSingleCasinoInStore(state, payload) {
-        state.casinos.push(payload);
+        state.casinos.unshift(payload);
     },
 
     deleteSingleCasino(state, index) {

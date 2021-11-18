@@ -264,12 +264,12 @@ export default {
                     email: this.activeUser.email,
                     phone_number: this.activeUser.phone_number,
                 })
-                .then(() => {
+                .then((response) => {
                     this.isEditModal = false
                     this.displayAlert(true, "User updated !!")
                     return this.$store.commit('updateSingleUserInStore', {
                         index: this.activeUserIndex,
-                        value: this.activeUser
+                        value: response.data.data
                     })
                 })
                 .catch((error) => {

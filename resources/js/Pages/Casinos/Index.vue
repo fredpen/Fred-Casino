@@ -115,7 +115,7 @@
                     </div>
 
                     <div class="mt-4">
-                        <BreezeButton @click="createCasino" :disabled="canCreate === true ? true : 'disabled'" class="my-4">
+                        <BreezeButton @click="createCasino" :disabled="canCreate === true ? false : 'disabled'" class="my-4">
                             {{newCasino.name ? `Create ${newCasino.name}` : 'Create Casino'}}
                         </BreezeButton>
                     </div>
@@ -131,7 +131,10 @@
         <div class="absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50">
             <div class="w-2/5 p-6 bg-white">
                 <div class="flex items-center justify-between">
-                    <h3 class="my-3 text-center">Update {{activeCasino.name}}</h3>
+                    <div class="my-3 flex-shrink-0 w-10 h-10">
+                        <img class="w-10 h-10 rounded-full" :src="activeCasino.logo_url" :alt="activeCasino.name">
+                    </div>
+                    <span> Edit {{activeCasino.name}}</span>
                     <svg @click="isEditModal = false" xmlns="http://www.w3.org/2000/svg" class="link w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -142,12 +145,12 @@
 
                     <div class="mt-4">
                         <BreezeLabel for="name" value="Name" />
-                        <BreezeInput id="name" type="text" class="mt-1 block w-full" v-model="activeCasino.name" required autocomplete="name" />
+                        <BreezeInput id="name" type="text" class="mt-1 block w-full" v-model="activeCasino.name" autocomplete="name" />
                     </div>
 
                     <div class="mt-4">
                         <BreezeLabel for="affiliate_link" value="Affiliate link" />
-                        <BreezeInput id="affiliate_link" type="text" class="mt-1 block w-full" v-model="activeCasino.affiliate_link" required />
+                        <BreezeInput id="affiliate_link" type="text" class="mt-1 block w-full" v-model="activeCasino.affiliate_link" />
                     </div>
 
                     <div class="mt-4">
@@ -155,8 +158,8 @@
                         <BreezeTextBox id="bonus_information" type="text" class="mt-1 block w-full" v-model="activeCasino.bonus_information" />
                     </div>
 
-                    <div class="mt-4">
-                        <BreezeButton @click="updateCasino" :disabled="canUpdate === true ? true : 'disabled'" class="my-4">
+                    <div @click="updateCasino" class="mt-4">
+                        <BreezeButton @click="updateCasino" :disabled="canUpdate === true ? false : 'disabled'" class="my-4">
                             {{newCasino.name ? `Update ${newCasino.name}` : 'Update Casino'}}
                         </BreezeButton>
                     </div>
@@ -210,22 +213,22 @@ export default {
             newCasino: {},
             activeCasinoIndex: null,
             tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",
+            buttonStyle: "inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray transition ease-in-out duration-150"
         }
     },
 
     computed: {
         canCreate() {
             if (!this.newCasino.name || this.newCasino.name.length < 5) return "Name is required";
-            if (!this.newCasino.logo || this.newCasino.logo.length < 11) return "logo is required";
             if (!this.newCasino.affiliate_link || this.newCasino.affiliate_link < 5) return "Affiliate link is required";
             if (!this.newCasino.bonus_information || this.newCasino.bonus_information < 5) return "Bonus information is required";
+            if (!this.newCasino.logo || this.newCasino.logo.length < 11) return "logo is required";
 
             return true;
         },
 
         canUpdate() {
             if (!this.activeCasino.name || this.activeCasino.name.length < 5) return "Name is required";
-            if (!this.activeCasino.logo || this.activeCasino.logo.length < 11) return "logo is required";
             if (!this.activeCasino.affiliate_link || this.activeCasino.affiliate_link < 5) return "Affiliate link is required";
             if (!this.activeCasino.bonus_information || this.activeCasino.bonus_information < 5) return "Bonus information is required";
 
@@ -282,7 +285,8 @@ export default {
         },
 
         updateCasino() {
-            if (!this.activeCasino) return false;
+
+            // return console.log(this.activeCasino);
             putCall(Dynamic_endpoints.UPDATE_CASINO_BY_ID(this.activeCasino.id), {
                     name: this.activeCasino.name,
                     email: this.activeCasino.email,

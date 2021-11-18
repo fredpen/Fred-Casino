@@ -23035,20 +23035,20 @@ __webpack_require__.r(__webpack_exports__);
       isCreateModal: false,
       newCasino: {},
       activeCasinoIndex: null,
-      tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200"
+      tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",
+      buttonStyle: "inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray transition ease-in-out duration-150"
     };
   },
   computed: {
     canCreate: function canCreate() {
       if (!this.newCasino.name || this.newCasino.name.length < 5) return "Name is required";
-      if (!this.newCasino.logo || this.newCasino.logo.length < 11) return "logo is required";
       if (!this.newCasino.affiliate_link || this.newCasino.affiliate_link < 5) return "Affiliate link is required";
       if (!this.newCasino.bonus_information || this.newCasino.bonus_information < 5) return "Bonus information is required";
+      if (!this.newCasino.logo || this.newCasino.logo.length < 11) return "logo is required";
       return true;
     },
     canUpdate: function canUpdate() {
       if (!this.activeCasino.name || this.activeCasino.name.length < 5) return "Name is required";
-      if (!this.activeCasino.logo || this.activeCasino.logo.length < 11) return "logo is required";
       if (!this.activeCasino.affiliate_link || this.activeCasino.affiliate_link < 5) return "Affiliate link is required";
       if (!this.activeCasino.bonus_information || this.activeCasino.bonus_information < 5) return "Bonus information is required";
       return true;
@@ -23103,7 +23103,7 @@ __webpack_require__.r(__webpack_exports__);
     updateCasino: function updateCasino() {
       var _this3 = this;
 
-      if (!this.activeCasino) return false;
+      // return console.log(this.activeCasino);
       (0,_plugins_apiCall__WEBPACK_IMPORTED_MODULE_6__.putCall)(_plugins_endPoints__WEBPACK_IMPORTED_MODULE_8__.Dynamic_endpoints.UPDATE_CASINO_BY_ID(this.activeCasino.id), {
         name: this.activeCasino.name,
         email: this.activeCasino.email,
@@ -24902,10 +24902,11 @@ var _hoisted_44 = {
   "class": "flex items-center justify-between"
 };
 var _hoisted_45 = {
-  "class": "my-3 text-center"
+  "class": "my-3 flex-shrink-0 w-10 h-10"
 };
+var _hoisted_46 = ["src", "alt"];
 
-var _hoisted_46 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
+var _hoisted_47 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
   "stroke-linecap": "round",
   "stroke-linejoin": "round",
   "stroke-width": "2",
@@ -24914,16 +24915,13 @@ var _hoisted_46 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_47 = [_hoisted_46];
-var _hoisted_48 = {
+var _hoisted_48 = [_hoisted_47];
+var _hoisted_49 = {
   "class": "my-4"
 };
-var _hoisted_49 = {
+var _hoisted_50 = {
   key: 0,
   "class": "my-4 text-center text-red-700"
-};
-var _hoisted_50 = {
-  "class": "mt-4"
 };
 var _hoisted_51 = {
   "class": "mt-4"
@@ -25079,7 +25077,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       /* PROPS */
       , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_39, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeButton, {
         onClick: $options.createCasino,
-        disabled: $options.canCreate === true ? true : 'disabled',
+        disabled: $options.canCreate === true ? false : 'disabled',
         "class": "my-4"
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
@@ -25092,7 +25090,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
       }, 8
       /* PROPS */
-      , ["onClick", "disabled"])])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _ctx.isEditModal ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_40, [_hoisted_41, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_42, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_43, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", _hoisted_45, "Update " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.activeCasino.name), 1
+      , ["onClick", "disabled"])])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _ctx.isEditModal ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_40, [_hoisted_41, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_42, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_43, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+        "class": "w-10 h-10 rounded-full",
+        src: _ctx.activeCasino.logo_url,
+        alt: _ctx.activeCasino.name
+      }, null, 8
+      /* PROPS */
+      , _hoisted_46)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, " Edit " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.activeCasino.name), 1
       /* TEXT */
       ), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
         onClick: _cache[5] || (_cache[5] = function ($event) {
@@ -25103,9 +25107,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         fill: "none",
         viewBox: "0 0 24 24",
         stroke: "currentColor"
-      }, _hoisted_47))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_48, [$options.canUpdate !== true ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("h6", _hoisted_49, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.canUpdate), 1
+      }, _hoisted_48))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_49, [$options.canUpdate !== true ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("h6", _hoisted_50, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.canUpdate), 1
       /* TEXT */
-      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_50, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
+      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_51, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
         "for": "name",
         value: "Name"
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeInput, {
@@ -25116,11 +25120,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
           return _ctx.activeCasino.name = $event;
         }),
-        required: "",
         autocomplete: "name"
       }, null, 8
       /* PROPS */
-      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_51, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
+      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_52, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
         "for": "affiliate_link",
         value: "Affiliate link"
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeInput, {
@@ -25130,11 +25133,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         modelValue: _ctx.activeCasino.affiliate_link,
         "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
           return _ctx.activeCasino.affiliate_link = $event;
-        }),
-        required: ""
+        })
       }, null, 8
       /* PROPS */
-      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_52, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
+      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
         "for": "bonus_information",
         value: "Bonus Information"
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeTextBox, {
@@ -25147,9 +25149,14 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         })
       }, null, 8
       /* PROPS */
-      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeButton, {
+      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+        onClick: _cache[9] || (_cache[9] = function () {
+          return $options.updateCasino && $options.updateCasino.apply($options, arguments);
+        }),
+        "class": "mt-4"
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeButton, {
         onClick: $options.updateCasino,
-        disabled: $options.canUpdate === true ? true : 'disabled',
+        disabled: $options.canUpdate === true ? false : 'disabled',
         "class": "my-4"
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {

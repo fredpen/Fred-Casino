@@ -9,8 +9,19 @@ class CasinoListing extends Model
 {
     use HasFactory;
 
-    public function countries()
+    protected $with = ['country', 'casino:id,name'];
+
+    protected $table = "casino_listings";
+
+    protected $hidden = ["created_at", "updated_at"];
+
+    public function country()
     {
-        return $this->belongsToMany(Country::class);
+        return $this->belongsTo(Country::class);
+    }
+
+    public function casino()
+    {
+        return $this->belongsTo(Casino::class);
     }
 }

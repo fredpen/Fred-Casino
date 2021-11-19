@@ -19,9 +19,8 @@ class DatabaseSeeder extends Seeder
     {
         User::factory(10)->create();
         Casino::factory(10)->create();
-        Country::factory()
-            ->has(CasinoListing::factory()->count(1), 'listings')
-            ->count(5)
-            ->create();
+        Country::factory(10)->create();
+        CasinoListing::factory(3)->create();
+
     }
 }

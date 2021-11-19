@@ -11,8 +11,10 @@ class Country extends Model
 
     protected $guarded = [];
 
-    public function listings()
+    protected $hidden = ["created_at", "updated_at", "code"];
+
+    public function casinos()
     {
-        return $this->hasMany(CasinoListing::class);
+        return $this->belongsToMany(Casino::class, 'casino_listings');
     }
 }

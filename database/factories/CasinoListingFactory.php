@@ -18,8 +18,7 @@ class CasinoListingFactory extends Factory
     {
         return [
             'country_id' =>  Country::inRandomOrder()->first(),
-            "casino_id" => Casino::inRandomOrder()->first(),
-            'level' =>  $this->faker->numberBetween(1, 10000)
+            "casino_id" => Casino::inRandomOrder()->first()
         ];
     }
 }

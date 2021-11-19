@@ -40,12 +40,8 @@ Route::group(['prefix' => 'casino', 'middleware' => 'auth:sanctum'], function ()
 Route::group(['prefix' => 'casino-listing', 'middleware' => 'auth:sanctum'], function () {
 
     Route::get('all',  [CasinoListingController::class, 'all']);
-    Route::post('create',  [CasinoListingController::class, 'create']);
-    Route::post('{casino_id}/update',  [CasinoListingController::class, 'update']);
-    Route::delete('{casino_id}/delete', [CasinoListingController::class, 'delete']);
-    Route::get('{casino_id_or_name}/show',  [CasinoListingController::class, 'show']);
-    Route::get('casino_id_or_name}/by-casino',  [CasinoListingController::class, 'all']);
-    Route::get('country_id_or_name}/by-country',  [CasinoListingController::class, 'all']);
+    Route::get('{country_id}/by-countries',  [CasinoListingController::class, 'countryListings']);
+    Route::post('update',  [CasinoListingController::class, 'syncCountryListings']);
 });
 
 

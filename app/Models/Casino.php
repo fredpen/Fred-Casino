@@ -13,6 +13,11 @@ class Casino extends Model
 
     protected $guarded = [];
 
+    public function country()
+    {
+        return $this->belongsToMany(Country::class, 'casino_listings');
+    }
+
     public function removeExistingLogo(): bool
     {
         $baseUrl = Config::get('app.url');

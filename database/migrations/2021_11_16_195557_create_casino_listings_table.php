@@ -21,9 +21,10 @@ class CreateCasinoListingsTable extends Migration
 
             $table->timestamps();
             $table->index(['country_id', 'casino_id', 'level']);
+            $table->unique(['country_id', 'casino_id']);
 
             $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
-            $table->foreign('casino_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('casino_id')->references('id')->on('casinos')->onDelete('cascade');
         });
     }
 

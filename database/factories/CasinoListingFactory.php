@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Casino;
+use App\Models\CasinoListing;
+use App\Models\Country;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CasinoListingFactory extends Factory
@@ -14,7 +17,8 @@ class CasinoListingFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'country_id' =>  Country::inRandomOrder()->first(),
+            "casino_id" => Casino::inRandomOrder()->first()
         ];
     }
 }

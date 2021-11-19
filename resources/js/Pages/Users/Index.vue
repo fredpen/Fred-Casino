@@ -106,7 +106,7 @@
                         <input type="password" name="password" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="newUser.password"></div>
 
                     <div class="max-w-2xl p-6 bg-white my-5">
-                        <button @click="createUser" :disabled="canCreateUser === true ? true : 'disabled'" class="link block p-3 font-bold text-white bg-blue-500 rounded-l">
+                        <button @click="createUser" :disabled="canCreateUser === true ? false : 'disabled'" class="link block p-3 font-bold text-white bg-blue-500 rounded-l">
                             {{newUser.name ? `Create ${newUser.name}` : 'Create User'}}
                         </button>
                     </div>
@@ -120,7 +120,7 @@
         <button class="px-6 py-2 text-white bg-blue-600 rounded shadow-xl" type="button">open
             model</button>
         <div class="absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50">
-            <div class="max-w-5xl  w-4/5 p-6 bg-white">
+            <div class="max-w-5xl  w-2/5 p-6 bg-white">
                 <div class="flex items-center justify-between">
                     <h3 class="my-3 text-center">Update {{activeUser.name}}</h3>
                     <svg @click="isEditModal = false" xmlns="http://www.w3.org/2000/svg" class="link w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -130,20 +130,24 @@
 
                 <div class="my-4">
                     <h6 v-if="canUpdateUser !== true" class="my-4 text-center text-red-700">{{canUpdateUser}}</h6>
-                    <div class="grid gap-4 grid-cols-2 mb-5">
+
+                    <div class="mt-4">
                         <div> <label for="name" class="block font-bold text-gray-600">Name</label>
                             <input type="text" name="name" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="activeUser.name"></div>
                     </div>
 
-                    <div class="grid gap-4 grid-cols-2 mb-5">
+                    <div class="mt-4">
                         <div> <label for="email" class="block font-bold text-gray-600">Email</label>
                             <input type="email" name="email" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="activeUser.email"></div>
+                    </div>
+
+                    <div class="mt-4">
                         <div> <label for="phone_number" class="block font-bold text-gray-600">Phone</label>
                             <input type="phone" name="phone_number" class="w-full p-2 border border-gray-300 rounded-l shadow focus:outline-none focus:ring-2 focus:ring-purple-300" v-model="activeUser.phone_number"></div>
                     </div>
 
-                    <div class="max-w-2xl p-6 bg-white">
-                        <button @click="updateUser" :disabled="canUpdateUser === true ? true : 'disabled'" class="link block p-3 font-bold text-white bg-blue-500 rounded-l">Submit</button>
+                    <div class="max-w-2xl p-6 bg-white my-4">
+                        <button @click="updateUser" :disabled="canUpdateUser === true ? false : 'disabled'" class="link block p-3 font-bold text-white bg-blue-500 rounded-l">Submit</button>
                     </div>
                 </div>
             </div>
@@ -280,7 +284,6 @@ export default {
 
         createUser() {
             if (!this.newUser) return false;
-            // return console.log(this.newUser);;
             postCall(CREATE_A_USER, this.newUser)
                 .then((response) => {
                     this.displayAlert(true, "User Created !!")

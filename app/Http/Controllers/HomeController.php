@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Casino;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -22,7 +23,9 @@ class HomeController extends Controller
 
     public function listings()
     {
-        return Inertia::render('Listings/Index', []);
+        return Inertia::render('Listings/Index', [
+            "casinos" => Casino::all(['id', 'name'])
+        ]);
     }
 
     public function casinos()

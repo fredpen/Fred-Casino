@@ -25,6 +25,11 @@ const mutations = {
         state[payload.data] = payload.value;
     },
 
+    // listings
+    updateSingleListingsInStore(state, payload) {
+        state.casinos[payload.index] = payload.value;
+    },
+
     // users
     updateSingleUserInStore(state, payload) {
         state.users[payload.index] = payload.value;

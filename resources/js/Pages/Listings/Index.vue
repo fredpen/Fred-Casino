@@ -70,12 +70,9 @@
         <button class="px-6 py-2 text-white bg-blue-600 rounded shadow-xl" type="button">open
             model</button>
         <div class="absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50">
-            <div class="w-2/5 p-6 bg-white">
+            <div class="w-3/5 p-6 bg-white">
                 <div class="flex items-center justify-between">
-                    <div class="my-3 flex-shrink-0 w-10 h-10">
-                        <img class="w-10 h-10 rounded-full" :src="activeListing.logo_url" :alt="activeListing.name">
-                    </div>
-                    <span> Edit {{activeListing.name}}</span>
+                    <span> {{activeListing.country.name}}'s Listings</span>
                     <svg @click="isEditModal = false" xmlns="http://www.w3.org/2000/svg" class="link w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -84,29 +81,45 @@
                 <div class="my-4">
                     <h6 v-if="canUpdate !== true" class="my-4 text-center text-red-700">{{canUpdate}}</h6>
 
-                    <div class="mt-4">
-                        <BreezeLabel for="name" value="Name" />
-                        <BreezeInput id="name" type="text" class="mt-1 block w-full" v-model="activeListing.name" autocomplete="name" />
+                    <div class="text-sm leading-5 text-gray-500">
+                        <p>Current Listings <small>(Click X to remove a listing)</small></p>
+                        <div class="mt-4">
+                            <div class="max-w-xl p-4">
+                                <div class="p-4 bg-white rounded shadow-md">
+                                    <button @click="removeListing(index)" style="margin:5px" v-for="(item, index) in activeListing.casinos" :key="index" class="h-10 px-5 font-bold bg-gray-100 text-gray-600  ">
+                                        <span class="mr-2"> {{item.casino.name}}</span>
+                                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-black-100 bg-black-600 rounded-full">
+                                            <span class="link">
+                                                <span style="font-size:18px">x</span>
+                                            </span>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mt-4">
-                        <BreezeLabel for="affiliate_link" value="Affiliate link" />
-                        <BreezeInput id="affiliate_link" type="text" class="mt-1 block w-full" v-model="activeListing.affiliate_link" />
-                    </div>
-
-                    <div class="mt-4">
-                        <BreezeLabel class="text-sm text-red-600" for="logo" value="logo (size must be 180 * 90)" />
-                        <input class="mt-1 block w-full" id="updateFile" ref="updateFile" type="file" />
-                    </div>
-
-                    <div class="mt-4">
-                        <BreezeLabel for="bonus_information" value="Bonus Information" />
-                        <BreezeTextBox id="bonus_information" type="text" class="mt-1 block w-full" v-model="activeListing.bonus_information" />
+                    <div class="text-sm leading-5 text-gray-500">
+                        <div class="mt-4">
+                            <p>Available Listings <small>(Click + to add a listing)</small></p>
+                            <div class="max-w-xl p-4">
+                                <div class="p-8 bg-white rounded shadow-md">
+                                    <button @click="addListing(index)" style="margin:5px" v-for="(item, index) in availableListings" :key="index" class="h-10 px-5 font-bold bg-gray-100 text-gray-600  ">
+                                        <span class="mr-2"> {{item.name}}</span>
+                                        <span class="inline-flex items-center justify-center py-1 text-xs font-bold leading-none text-black-100 bg-black-600 rounded-full">
+                                            <span class="link">
+                                                <span style="font-size:18px">+</span>
+                                            </span>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div @click="updateListing" class="mt-4">
-                        <BreezeButton @click="updateListing" :disabled="canUpdate === true ? false : 'disabled'" class="my-4">
-                            {{newListing.name ? `Update ${newListing.name}` : 'Update Listing'}}
+                        <BreezeButton :disabled="canUpdate === true ? false : 'disabled'" class="my-4">
+                            Update {{activeListing.country.name}}'s' Listings
                         </BreezeButton>
                     </div>
                 </div>
@@ -154,11 +167,7 @@ export default {
             activeListing: {},
             password: "",
             isCreateModal: false,
-            newListing: {
-                name: "Fred olad",
-                bonus_information: "https://laravel.com/docs/8.x/validation",
-                affiliate_link: "https://laravel.com/docs/8.x/validation"
-            },
+            availableListings: [],
             activeListingIndex: null,
             tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",
             buttonStyle: "inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray transition ease-in-out duration-150"
@@ -167,21 +176,20 @@ export default {
 
     computed: {
         canUpdate() {
-            if (!this.activeListing.name || this.activeListing.name.length < 5) return "Name is required";
-            if (!this.activeListing.affiliate_link || this.activeListing.affiliate_link < 5) return "Affiliate link is required";
-            if (!this.activeListing.bonus_information || this.activeListing.bonus_information < 5) return "Bonus information is required";
-
             return true;
         },
 
-        tableHead: () => ["SN", "Name", "listings", "Update"],
+        casinos() {
+            return this.$page.props.casinos
+        },
+
+        tableHead: () => ["SN", "Country", "listings", "Update"],
         listings() {
             return this.$store.state.listings;
         }
     },
 
     created() {
-        // if the store is empty then refetch the listings
         if (this.listings < 1) return this.fetchListings();
     },
 
@@ -201,8 +209,26 @@ export default {
         },
 
         setActiveListing(index) {
-            this.activeListingIndex = this.index;
-            this.activeListing = this.listings[index];
+            this.activeListingIndex = index;
+            this.activeListing = JSON.parse(JSON.stringify(this.listings[index]));
+
+            let casinos = JSON.parse(JSON.stringify(this.casinos));
+            let currentListing = JSON.parse(JSON.stringify(this.activeListing));
+            let currentListingIds = currentListing.casinos.map(value => value.casino.id);
+
+            this.availableListings = casinos.filter(value => !currentListingIds.includes(value.id));
+        },
+
+        removeListing(index) {
+            let ele = this.activeListing.casinos.splice(index, 1);
+            this.availableListings.push(ele[0].casino)
+        },
+
+        addListing(index) {
+            let ele = this.availableListings.splice(index, 1);
+            this.activeListing.casinos.push({
+                casino: ele[0]
+            })
         },
 
         openEditModal(index) {
@@ -211,22 +237,24 @@ export default {
         },
 
         updateListing() {
-            postCall(UPDATE_CASINO_LISTINGS, {
-                    name: this.activeUser.name,
-                    email: this.activeUser.email,
-                    phone_number: this.activeUser.phone_number,
-                })
+            let requestObject = {
+                country_id: this.activeListing.country.id,
+                casinoIds: this.activeListing.casinos.map(value => value.casino.id)
+            };
+
+            postCall(UPDATE_CASINO_LISTINGS, requestObject)
                 .then((response) => {
-                    this.isEditModal = false
-                    this.displayAlert(true, "User updated !!")
-                    return this.$store.commit('updateSingleUserInStore', {
-                        index: this.activeUserIndex,
-                        value: response.data.data
+                    this.displayAlert(true, "Listings updated !!")
+                      this.listings[this.activeListingIndex] = this.activeListing;
+                    return this.$store.commit('updateSingleListingsInStore', {
+                        index: this.activeListingIndex,
+                        value: this.activeListing
                     })
                 })
                 .catch((error) => {
+                    this.displayAlert(true, error.response.data, "error")
+                }).finally(() => {
                     this.isEditModal = false
-                    return this.displayAlert(true, error.response.data, "error")
                 });
         },
 

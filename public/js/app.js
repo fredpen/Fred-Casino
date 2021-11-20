@@ -23255,11 +23255,7 @@ __webpack_require__.r(__webpack_exports__);
       activeListing: {},
       password: "",
       isCreateModal: false,
-      newListing: {
-        name: "Fred olad",
-        bonus_information: "https://laravel.com/docs/8.x/validation",
-        affiliate_link: "https://laravel.com/docs/8.x/validation"
-      },
+      availableListings: [],
       activeListingIndex: null,
       tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",
       buttonStyle: "inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray transition ease-in-out duration-150"
@@ -23267,20 +23263,19 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     canUpdate: function canUpdate() {
-      if (!this.activeListing.name || this.activeListing.name.length < 5) return "Name is required";
-      if (!this.activeListing.affiliate_link || this.activeListing.affiliate_link < 5) return "Affiliate link is required";
-      if (!this.activeListing.bonus_information || this.activeListing.bonus_information < 5) return "Bonus information is required";
       return true;
     },
+    casinos: function casinos() {
+      return this.$page.props.casinos;
+    },
     tableHead: function tableHead() {
-      return ["SN", "Name", "listings", "Update"];
+      return ["SN", "Country", "listings", "Update"];
     },
     listings: function listings() {
       return this.$store.state.listings;
     }
   },
   created: function created() {
-    // if the store is empty then refetch the listings
     if (this.listings < 1) return this.fetchListings();
   },
   methods: {
@@ -23298,8 +23293,26 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     setActiveListing: function setActiveListing(index) {
-      this.activeListingIndex = this.index;
-      this.activeListing = this.listings[index];
+      this.activeListingIndex = index;
+      this.activeListing = JSON.parse(JSON.stringify(this.listings[index]));
+      var casinos = JSON.parse(JSON.stringify(this.casinos));
+      var currentListing = JSON.parse(JSON.stringify(this.activeListing));
+      var currentListingIds = currentListing.casinos.map(function (value) {
+        return value.casino.id;
+      });
+      this.availableListings = casinos.filter(function (value) {
+        return !currentListingIds.includes(value.id);
+      });
+    },
+    removeListing: function removeListing(index) {
+      var ele = this.activeListing.casinos.splice(index, 1);
+      this.availableListings.push(ele[0].casino);
+    },
+    addListing: function addListing(index) {
+      var ele = this.availableListings.splice(index, 1);
+      this.activeListing.casinos.push({
+        casino: ele[0]
+      });
     },
     openEditModal: function openEditModal(index) {
       this.setActiveListing(index);
@@ -23308,22 +23321,24 @@ __webpack_require__.r(__webpack_exports__);
     updateListing: function updateListing() {
       var _this2 = this;
 
-      (0,_plugins_apiCall__WEBPACK_IMPORTED_MODULE_6__.postCall)(_plugins_endPoints__WEBPACK_IMPORTED_MODULE_8__.UPDATE_CASINO_LISTINGS, {
-        name: this.activeUser.name,
-        email: this.activeUser.email,
-        phone_number: this.activeUser.phone_number
-      }).then(function (response) {
-        _this2.isEditModal = false;
+      var requestObject = {
+        country_id: this.activeListing.country.id,
+        casinoIds: this.activeListing.casinos.map(function (value) {
+          return value.casino.id;
+        })
+      };
+      (0,_plugins_apiCall__WEBPACK_IMPORTED_MODULE_6__.postCall)(_plugins_endPoints__WEBPACK_IMPORTED_MODULE_8__.UPDATE_CASINO_LISTINGS, requestObject).then(function (response) {
+        _this2.displayAlert(true, "Listings updated !!");
 
-        _this2.displayAlert(true, "User updated !!");
-
-        return _this2.$store.commit('updateSingleUserInStore', {
-          index: _this2.activeUserIndex,
-          value: response.data.data
+        _this2.listings[_this2.activeListingIndex] = _this2.activeListing;
+        return _this2.$store.commit('updateSingleListingsInStore', {
+          index: _this2.activeListingIndex,
+          value: _this2.activeListing
         });
       })["catch"](function (error) {
+        _this2.displayAlert(true, error.response.data, "error");
+      })["finally"](function () {
         _this2.isEditModal = false;
-        return _this2.displayAlert(true, error.response.data, "error");
       });
     },
     displayAlert: function displayAlert(statusType, message) {
@@ -25491,17 +25506,13 @@ var _hoisted_20 = {
   "class": "absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50"
 };
 var _hoisted_21 = {
-  "class": "w-2/5 p-6 bg-white"
+  "class": "w-3/5 p-6 bg-white"
 };
 var _hoisted_22 = {
   "class": "flex items-center justify-between"
 };
-var _hoisted_23 = {
-  "class": "my-3 flex-shrink-0 w-10 h-10"
-};
-var _hoisted_24 = ["src", "alt"];
 
-var _hoisted_25 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
+var _hoisted_23 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
   "stroke-linecap": "round",
   "stroke-linejoin": "round",
   "stroke-width": "2",
@@ -25510,40 +25521,84 @@ var _hoisted_25 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_26 = [_hoisted_25];
-var _hoisted_27 = {
+var _hoisted_24 = [_hoisted_23];
+var _hoisted_25 = {
   "class": "my-4"
 };
-var _hoisted_28 = {
+var _hoisted_26 = {
   key: 0,
   "class": "my-4 text-center text-red-700"
 };
+var _hoisted_27 = {
+  "class": "text-sm leading-5 text-gray-500"
+};
+
+var _hoisted_28 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Current Listings "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("small", null, "(Click X to remove a listing)")], -1
+/* HOISTED */
+);
+
 var _hoisted_29 = {
   "class": "mt-4"
 };
 var _hoisted_30 = {
-  "class": "mt-4"
+  "class": "max-w-xl p-4"
 };
 var _hoisted_31 = {
-  "class": "mt-4"
+  "class": "p-4 bg-white rounded shadow-md"
 };
-var _hoisted_32 = {
-  "class": "mt-1 block w-full",
-  id: "updateFile",
-  ref: "updateFile",
-  type: "file"
-};
+var _hoisted_32 = ["onClick"];
 var _hoisted_33 = {
+  "class": "mr-2"
+};
+
+var _hoisted_34 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  "class": "inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-black-100 bg-black-600 rounded-full"
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  "class": "link"
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  style: {
+    "font-size": "18px"
+  }
+}, "x")])], -1
+/* HOISTED */
+);
+
+var _hoisted_35 = {
+  "class": "text-sm leading-5 text-gray-500"
+};
+var _hoisted_36 = {
   "class": "mt-4"
 };
+
+var _hoisted_37 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Available Listings "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("small", null, "(Click + to add a listing)")], -1
+/* HOISTED */
+);
+
+var _hoisted_38 = {
+  "class": "max-w-xl p-4"
+};
+var _hoisted_39 = {
+  "class": "p-8 bg-white rounded shadow-md"
+};
+var _hoisted_40 = ["onClick"];
+var _hoisted_41 = {
+  "class": "mr-2"
+};
+
+var _hoisted_42 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  "class": "inline-flex items-center justify-center py-1 text-xs font-bold leading-none text-black-100 bg-black-600 rounded-full"
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  "class": "link"
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  style: {
+    "font-size": "18px"
+  }
+}, "+")])], -1
+/* HOISTED */
+);
+
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Head = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Head");
-
-  var _component_BreezeLabel = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("BreezeLabel");
-
-  var _component_BreezeInput = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("BreezeInput");
-
-  var _component_BreezeTextBox = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("BreezeTextBox");
 
   var _component_BreezeButton = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("BreezeButton");
 
@@ -25603,13 +25658,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         , _hoisted_15)]);
       }), 128
       /* KEYED_FRAGMENT */
-      ))])])])])])])])]), _ctx.isEditModal ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_18, [_hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
-        "class": "w-10 h-10 rounded-full",
-        src: _ctx.activeListing.logo_url,
-        alt: _ctx.activeListing.name
-      }, null, 8
-      /* PROPS */
-      , _hoisted_24)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, " Edit " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.activeListing.name), 1
+      ))])])])])])])])]), _ctx.isEditModal ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_18, [_hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.activeListing.country.name) + "'s Listings", 1
       /* TEXT */
       ), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
         onClick: _cache[0] || (_cache[0] = function ($event) {
@@ -25620,66 +25669,53 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         fill: "none",
         viewBox: "0 0 24 24",
         stroke: "currentColor"
-      }, _hoisted_26))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [$options.canUpdate !== true ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("h6", _hoisted_28, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.canUpdate), 1
+      }, _hoisted_24))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [$options.canUpdate !== true ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("h6", _hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.canUpdate), 1
       /* TEXT */
-      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
-        "for": "name",
-        value: "Name"
-      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeInput, {
-        id: "name",
-        type: "text",
-        "class": "mt-1 block w-full",
-        modelValue: _ctx.activeListing.name,
-        "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
-          return _ctx.activeListing.name = $event;
-        }),
-        autocomplete: "name"
-      }, null, 8
-      /* PROPS */
-      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_30, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
-        "for": "affiliate_link",
-        value: "Affiliate link"
-      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeInput, {
-        id: "affiliate_link",
-        type: "text",
-        "class": "mt-1 block w-full",
-        modelValue: _ctx.activeListing.affiliate_link,
-        "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
-          return _ctx.activeListing.affiliate_link = $event;
-        })
-      }, null, 8
-      /* PROPS */
-      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
-        "class": "text-sm text-red-600",
-        "for": "logo",
-        value: "logo (size must be 180 * 90)"
-      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", _hoisted_32, null, 512
-      /* NEED_PATCH */
-      )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeLabel, {
-        "for": "bonus_information",
-        value: "Bonus Information"
-      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeTextBox, {
-        id: "bonus_information",
-        type: "text",
-        "class": "mt-1 block w-full",
-        modelValue: _ctx.activeListing.bonus_information,
-        "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
-          return _ctx.activeListing.bonus_information = $event;
-        })
-      }, null, 8
-      /* PROPS */
-      , ["modelValue"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-        onClick: _cache[4] || (_cache[4] = function () {
+      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [_hoisted_28, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_30, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.activeListing.casinos, function (item, index) {
+        return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+          onClick: function onClick($event) {
+            return $options.removeListing(index);
+          },
+          style: {
+            "margin": "5px"
+          },
+          key: index,
+          "class": "h-10 px-5 font-bold bg-gray-100 text-gray-600"
+        }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_33, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.casino.name), 1
+        /* TEXT */
+        ), _hoisted_34], 8
+        /* PROPS */
+        , _hoisted_32);
+      }), 128
+      /* KEYED_FRAGMENT */
+      ))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [_hoisted_37, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_39, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.availableListings, function (item, index) {
+        return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+          onClick: function onClick($event) {
+            return $options.addListing(index);
+          },
+          style: {
+            "margin": "5px"
+          },
+          key: index,
+          "class": "h-10 px-5 font-bold bg-gray-100 text-gray-600"
+        }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_41, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.name), 1
+        /* TEXT */
+        ), _hoisted_42], 8
+        /* PROPS */
+        , _hoisted_40);
+      }), 128
+      /* KEYED_FRAGMENT */
+      ))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+        onClick: _cache[1] || (_cache[1] = function () {
           return $options.updateListing && $options.updateListing.apply($options, arguments);
         }),
         "class": "mt-4"
       }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BreezeButton, {
-        onClick: $options.updateListing,
         disabled: $options.canUpdate === true ? false : 'disabled',
         "class": "my-4"
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.newListing.name ? "Update ".concat(_ctx.newListing.name) : 'Update Listing'), 1
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Update " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.activeListing.country.name) + "'s' Listings ", 1
           /* TEXT */
           )];
         }),
@@ -25688,7 +25724,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
       }, 8
       /* PROPS */
-      , ["onClick", "disabled"])])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)];
+      , ["disabled"])])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)];
     }),
     _: 1
     /* STABLE */
@@ -26411,6 +26447,10 @@ var mutations = {
   },
   updateStore: function updateStore(state, payload) {
     state[payload.data] = payload.value;
+  },
+  // listings
+  updateSingleListingsInStore: function updateSingleListingsInStore(state, payload) {
+    state.casinos[payload.index] = payload.value;
   },
   // users
   updateSingleUserInStore: function updateSingleUserInStore(state, payload) {

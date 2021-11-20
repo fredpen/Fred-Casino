@@ -24,12 +24,11 @@
                             <BreezeNavLink :href="route('users')" :active="route().current('users')">
                                 Users
                             </BreezeNavLink>
-                            <BreezeNavLink :href="route('listings')" :active="route().current('listings')">
-                                Listings
-                            </BreezeNavLink>
-
                             <BreezeNavLink :href="route('casinos')" :active="route().current('casinos')">
                                 Casinos
+                            </BreezeNavLink>
+                            <BreezeNavLink :href="route('listings')" :active="route().current('listings')">
+                                Listings
                             </BreezeNavLink>
                         </div>
                     </div>

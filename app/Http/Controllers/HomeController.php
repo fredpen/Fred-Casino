@@ -18,7 +18,7 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         if ($request->user()) {
-            return redirect(RouteServiceProvider::HOME);
+            return redirect("/users");
         }
 
         return redirect('/login');

@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Casino;
-use App\Models\User;
+use Illuminate\Http\Request;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -12,6 +13,15 @@ class HomeController extends Controller
     public function users()
     {
         return Inertia::render('Users/Index', []);
+    }
+
+    public function index(Request $request)
+    {
+        if ($request->user()) {
+            return redirect(RouteServiceProvider::HOME);
+        }
+
+        return redirect('/login');
     }
 
     public function dashboard()

@@ -9,6 +9,11 @@ Open a terminal or a git client and clone the project using the code below
 
 ```sh
 git clone https://github.com/fredpen/Fred-Casino.git Fred-Casino
+```
+
+Enter into the project directory
+
+```sh
 cd Fred-Casino
 ```
 

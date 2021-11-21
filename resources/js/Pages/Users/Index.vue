@@ -83,7 +83,7 @@
         <button class="px-6 py-2 text-white bg-blue-600 rounded shadow-xl" type="button">open
             model</button>
         <div class="absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50">
-            <div class="max-w-5xl  w-2/5 p-6 bg-white">
+            <div class="max-w-5xl  w-1/5 p-6 bg-white">
                 <div class="flex items-center justify-between">
                     <h3 class="my-3 text-center">Create a new User</h3>
                     <svg @click="isCreateModal = false" xmlns="http://www.w3.org/2000/svg" class="link w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

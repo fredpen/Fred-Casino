@@ -222,9 +222,9 @@ export default {
             password: "",
             isCreateModal: false,
             newCasino: {
-                name: "Fred olad",
-                bonus_information: "https://laravel.com/docs/8.x/validation",
-                affiliate_link: "https://laravel.com/docs/8.x/validation"
+                name: null,
+                bonus_information: null,
+                affiliate_link: null
             },
             activeCasinoIndex: null,
             tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",

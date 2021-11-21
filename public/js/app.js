@@ -22822,9 +22822,9 @@ __webpack_require__.r(__webpack_exports__);
       password: "",
       isCreateModal: false,
       newCasino: {
-        name: "Fred olad",
-        bonus_information: "https://laravel.com/docs/8.x/validation",
-        affiliate_link: "https://laravel.com/docs/8.x/validation"
+        name: null,
+        bonus_information: null,
+        affiliate_link: null
       },
       activeCasinoIndex: null,
       tdTextStyle: "px-6 py-4 whitespace-no-wrap border-b border-gray-200",
@@ -25322,7 +25322,7 @@ var _hoisted_26 = {
   "class": "absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50"
 };
 var _hoisted_27 = {
-  "class": "max-w-5xl w-2/5 p-6 bg-white"
+  "class": "max-w-5xl w-1/5 p-6 bg-white"
 };
 var _hoisted_28 = {
   "class": "flex items-center justify-between"

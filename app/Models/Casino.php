@@ -21,7 +21,7 @@ class Casino extends Model
     public function removeExistingLogo(): bool
     {
         $baseUrl = Config::get('app.url');
-        $baseUrl = $baseUrl . "/storage/";
+        $baseUrl = url('') . "/storage/";
         $logoUrl = str_replace($baseUrl, '', $this->logo_url);
 
         return Storage::delete("public/{$logoUrl}");
@@ -30,8 +30,7 @@ class Casino extends Model
     public function storeNewLogo($logoFile): String
     {
         $path =  $logoFile->storePublicly('public/casino/logos');
-        $baseUrl = Config::get('app.url');
 
-        return $baseUrl . Storage::url($path);
+        return url('') . Storage::url($path);
     }
 }

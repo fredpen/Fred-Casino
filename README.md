@@ -50,6 +50,12 @@ Run database migrations and seeder:
 php artisan migrate:fresh --seed
 ```
 
+Run symlink for files upload:
+
+```sh
+php artisan storage:link
+```
+
 
 Run the dev server (the output will give the address):
 

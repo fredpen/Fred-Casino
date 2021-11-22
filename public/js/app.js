@@ -22821,6 +22821,7 @@ __webpack_require__.r(__webpack_exports__);
       activeCasino: {},
       password: "",
       isCreateModal: false,
+      tableKey: "js7dsgdsndnsnds7",
       newCasino: {
         name: null,
         bonus_information: null,
@@ -22852,8 +22853,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   created: function created() {
-    // if the store is empty then refetch the casinos
-    if (this.casinos < 1) return this.fetchCasinos();
+    this.fetchCasinos();
   },
   methods: {
     fetchCasinos: function fetchCasinos() {

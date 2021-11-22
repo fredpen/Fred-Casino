@@ -194,7 +194,6 @@ import {
     deleteCall,
     getCall,
     postCall,
-    putCall
 } from "@/plugins/apiCall";
 import {
     Head
@@ -221,6 +220,7 @@ export default {
             activeCasino: {},
             password: "",
             isCreateModal: false,
+            tableKey: "js7dsgdsndnsnds7",
             newCasino: {
                 name: null,
                 bonus_information: null,
@@ -256,8 +256,7 @@ export default {
     },
 
     created() {
-        // if the store is empty then refetch the casinos
-        if (this.casinos < 1) return this.fetchCasinos();
+        this.fetchCasinos();
     },
 
     methods: {

@@ -4,6 +4,7 @@ A demo application to illustrate Fred-Casino.
 
 ## Installation
  
+Note: PHP "^7.3|^8.0" is required to run this project locally.
 Clone the repo locally:
 Open a terminal or a git client and clone the project using the code below
 
